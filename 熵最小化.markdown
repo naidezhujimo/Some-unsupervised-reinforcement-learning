@@ -1,0 +1,48 @@
+对于一个离散概率分布 $p=(p_1,p_2,...,p_n)$，香农熵定义为：
+$$
+\mathcal{H}(p)=-\sum_{i=1}^{n}p_i\log p_i
+$$
+在自回归语言模型中，给定上下文 $y_{<t}$，下一个token的条件分布为 $\pi(\cdot|y_{<t})$，其条件熵为：
+$$
+\mathcal{H}(\pi(\cdot|y_{<t}))=-\sum_{j\in V}\pi(j|y_{<t})\log\pi(j|y_{<t})
+$$
+其中 $V$ 是词汇表
+
+#### 序列级熵估计器
+
+对于完整输出序列 $y=y_1y_2...y_{|y|}$，序列级熵是整个输出序列的熵，对于自回归语言模型，整个序列的联合概率分布为每个条件概率的乘积，因此序列的负对数概率之和可以视为整个输出序列的熵：
+$$
+\hat{\mathcal{H}}_\text{traj}(\pi_\theta)=-\frac{1}{N}\sum_{i=1}^N\log \pi_\theta(y^i)
+$$
+其中 $\pi_0(y^i)=\prod_{t=1}^{|y^i|}\pi_0(y_t^i|y_{<t}^i)$，展开可得：
+$$
+\hat{\mathcal{H}}_\text{traj}(\pi_\theta)=-\frac{1}{N}\sum_{i=1}^N\sum_{t=1}^{|y^i|}\log \pi_\theta(y_t^i|y_{<t}^i)
+$$
+
+#### 标记(token)级熵估计器
+
+标记级熵在每一步(每时间步/每token)计算：
+$$
+\hat{\mathcal{H}}_{tok}(\pi_\theta)=\frac{1}{N}\sum_{i=1}^N\sum_{t=1}^{|y^i|}\mathcal{H}(\pi_\theta(\cdot|y_{<t}^i))
+$$
+其中：
+$$
+\mathcal{H}(\pi_\theta(\cdot|y_{<t}^i))=-\sum_{j\in V}\pi_0(j|y_{<t}^i)\log\pi_\theta(j|y_{<t}^i)
+$$
+
+
+#### EM-FT数学推导
+
+EM-FT直接最小化标记级熵：$\mathcal{L}_\text{EM-FT}=\hat{\mathcal{H}}_{\text{tok}}(\pi_\theta)$
+
+使用链式法则计算梯度：
+$$
+
+$$
+
+#### EM-RL数学推导
+
+标准RL目标：$J(\theta)=\mathbb{E}_{y\sim\pi_\theta}[r(y)]$
+
+
+
